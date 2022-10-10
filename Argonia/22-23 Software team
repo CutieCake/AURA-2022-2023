@@ -1,0 +1,111 @@
+int i; //integer to count through the amount of readings we have/how to assign into our array sets
+ int value; // placeholder for actual altimeter reading
+ int climbVelocity[9];
+bool appogee = 0; // t/f statement of appogee
+int x = 0;
+int sum; // sum of the climbVelocity values
+int sumA; // sum of the altitude measurements
+int mean; // mean value of the climbVelocity values
+int meanA;// mean value of the altitude values
+ int altitudeArray[10]; // array of ten altitude measurements
+ int groundAltitude[10]; // ground altitude respective to sea level
+ int trueAltitude[10]; // altitude with respect to the ground level
+ int mav; // max of climbVelocity values
+ int nmav; //new max of climb velocity values
+ int miv; // min of climbVelocity values
+ int nmiv; //new min of climb velocity values
+ int maA; // max of Altitude values
+ int nmaA; // new max of Altitude values
+ int miA; // min of Altitude values
+ int nmiA; // new min of Altitude values
+ 
+
+
+
+void setup() {
+  // put your setup code here, to run once:
+ i = 1;
+ 
+}
+
+//int altitudeRead(pinRead){
+ 
+  
+ // return pinRead;
+ //} 
+void loop() {
+
+ value = value + 1;
+ 
+  for (i = 1; i<10; i = i + 1) { //getting our ten readings over 100ms for us to average out into an average altitude
+   altitudeArray[i] = value ; // value is place holder for our altimeter reading
+   trueAltitude[i] = altitudeArray[i] - groundAltitude[i]; // calculating altitude with respect to ground level
+   nmaA = max(maA, max(trueAltitude[i],trueAltitude[i-1]));
+ nmiA = min(miA, min(trueAltitude[i], trueAltitude[i-1]));
+  if (trueAltitude[i]!= maA && trueAltitude[i] != miA)
+  {
+  
+  sumA += trueAltitude[i]; // calculating sum of velocity values
+  
+  }
+  if (nmaA != maA) // if the new max isnt the previous max then the old max is added to the sum
+  {
+
+ sumA += maA;
+
+  }
+  if (nmiA != miA) // if the new min isnt the previous min then the old min is added to the sum
+  {
+
+ sumA += miA;
+
+  }
+  nmaA = maA;
+  nmiA = miA;
+
+   // calculate velocity values
+   climbVelocity[i] = (altitudeArray[i] - altitudeArray[i-1]) / .01 ; //calculating velocity by taking one array integer and subtracting the previous integer then dividing by 10microseconds
+    // calculate climbVelocity from alt Array not true bc it is more accurate since it is actual measurement
+   
+    delay(10);
+ nmav = max(mav, max(climbVelocity[i],climbVelocity[i-1]));
+ nmiv = min(miv, min(climbVelocity[i], climbVelocity[i-1]));
+  if (climbVelocity[i]!= mav && climbVelocity[i] != miv)
+  {
+  
+  sum += climbVelocity[i]; // calculating sum of velocity values
+  
+  }
+  if (nmav != mav) // if the new max isnt the previous max then the old max is added to the sum
+  {
+
+ sum += mav;
+
+  }
+  if (nmiv != miv) // if the new min isnt the previous min then the old min is added to the sum
+  {
+
+ sum += miv;
+
+  }
+  nmav = mav;
+  nmiv = miv;
+ }
+  mean = sum / 7;
+  miv = 999999999999 ; // reseting min and max values so a value isnt lost due to a reset of 0 removing an actual min etc.
+  mav = -999999999999 ; 
+  meanA = sumA / 8 ;
+  miA = 999999999999 ; // reseting min and max values so a value isnt lost due to a reset of 0 removing an actual min etc.
+  maA = -999999999999 ; 
+  sum = 0; // resetting sum values
+  sumA = 0;
+  i = 1; //restart so that for loop can begin again
+ if (0 < mean < 1)
+ {
+ 
+   appogee = 1;
+ 
+ }
+  
+
+}
